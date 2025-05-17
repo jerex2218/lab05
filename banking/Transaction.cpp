@@ -22,11 +22,15 @@ bool Transaction::Make(Account& from, Account& to, int sum) {
     if (sum < 100) throw std::logic_error("too small");
     if (fee_ * 2 > sum) return false;
 
-    Guard guard_from(from);
-    Guard guard_to(to);
+    {
+        Guard guard_from(from);  // Блокируем from первым
+        Guard guard_to(to);      // Блокируем to вторым
 
-    if (!Debit(from, sum + fee_)) return false;
-    Credit(to, sum);
+        if (!Debit(from, sum + fee_)) {
+            return false;
+        }
+        Credit(to, sum);
+    }  // Разблокировка происходит автоматически в обратном порядке
 
     SaveToDataBase(from, to, sum);
     return true;
