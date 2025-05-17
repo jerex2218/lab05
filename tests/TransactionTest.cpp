@@ -21,6 +21,7 @@ TEST(TransactionTest, TransferBetweenDifferentAccounts) {
 
     testing::InSequence seq;
     
+    // Ожидаемая последовательность:
     EXPECT_CALL(from, Lock()).Times(1);
     EXPECT_CALL(to, Lock()).Times(1);
     
@@ -29,8 +30,10 @@ TEST(TransactionTest, TransferBetweenDifferentAccounts) {
     
     EXPECT_CALL(to, ChangeBalance(300)).Times(1);
     
-    EXPECT_CALL(from, Unlock()).Times(1);
-    EXPECT_CALL(to, Unlock()).Times(1);
+    // Разблокировка в обратном порядке
+    EXPECT_CALL(to, Unlock()).Times(1);  // Сначала to
+    EXPECT_CALL(from, Unlock()).Times(1); // Потом from
 
     ASSERT_TRUE(tr.Make(from, to, 300));
 }
+
