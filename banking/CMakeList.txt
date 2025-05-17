@@ -34,12 +34,12 @@ if(BUILD_TESTS)
         gtest
         gmock
     )
-    
-    # Покрытие кода
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        target_compile_options(banking_tests PRIVATE --coverage)
-        target_link_options(banking_tests PRIVATE --coverage)
-    endif()
+ 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(banking_tests PRIVATE --coverage)
+    target_link_libraries(banking_tests PRIVATE --coverage)
+endif()
+   
 
     include(GoogleTest)
     gtest_discover_tests(banking_tests)
