@@ -1,13 +1,39 @@
 name: Build and Test
+
 on: [push, pull_request]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y cmake g++
-      - run: |
-          mkdir build && cd build
-          cmake .. -DBUILD_TESTS=ON
-          cmake --build .
-          ./banking_tests
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake g++ lcov gcovr
+        
+    - name: Configure and Build
+      run: |
+        mkdir build
+        cd build
+        cmake ../banking -DBUILD_TESTS=ON
+        cmake --build .
+        
+    - name: Run tests
+      run: |
+        cd build
+        ./banking_tests
+        
+    - name: Generate coverage
+      run: |
+        cd build
+        lcov --capture --directory . --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info
+        lcov --list coverage.info
+        
+    - name: Upload to Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: build/coverage.info
