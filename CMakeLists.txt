@@ -27,7 +27,9 @@ if(BUILD_TESTS)
         tests/AccountTest.cpp
         tests/TransactionTest.cpp
     )
-    target_link_libraries(tests
+    
+    # Единый стиль target_link_libraries с ключевыми словами
+    target_link_libraries(tests PRIVATE
         banking
         GTest::GTest
         GTest::GMock
@@ -36,7 +38,7 @@ if(BUILD_TESTS)
     # Покрытие кода
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         target_compile_options(tests PRIVATE --coverage)
-        target_link_libraries(tests PRIVATE --coverage)
+        target_link_options(tests PRIVATE --coverage)
     endif()
 
     include(GoogleTest)
