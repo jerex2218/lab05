@@ -14,9 +14,7 @@ class Transaction {
  private:
   void Credit(Account& accout, int sum);
   bool Debit(Account& accout, int sum);
-
-  // Virtual to test.
-  virtual void SaveToDataBase(Account& from, Account& to, int sum);
+  void SaveToDataBase(Account& from, Account& to, int sum);
 
   int fee_;
 };
