@@ -9,22 +9,19 @@ add_library(banking
     banking/Account.cpp
     banking/Transaction.cpp
 )
-target_include_directories(banking PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/banking
-)
+target_include_directories(banking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/banking)
 
 # Тесты
 option(BUILD_TESTS "Build tests" ON)
 
 if(BUILD_TESTS)
-    # Загрузка GoogleTest через FetchContent
+    # Загрузка GoogleTest
     include(FetchContent)
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG v1.13.0  # Используем конкретную версию
+        GIT_TAG release-1.13.0
     )
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
 
     # Исполняемый файл тестов
@@ -33,11 +30,11 @@ if(BUILD_TESTS)
         tests/TransactionTest.cpp
     )
     
-    # Подключение зависимостей
+    # Подключение зависимостей (используем только gtest_main)
     target_link_libraries(tests PRIVATE
         banking
         GTest::gtest_main
-        GMock::gmock_main
+        GTest::gmock
     )
     
     # Настройки покрытия кода
