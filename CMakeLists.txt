@@ -1,21 +1,20 @@
 cmake_minimum_required(VERSION 3.14)
-project(banking LANGUAGES CXX)
+project(lab05 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Основная библиотека
-add_library(banking STATIC
-    Account.cpp
-    Transaction.cpp
+# Добавляем библиотеку banking
+add_library(banking
+    banking/Account.cpp
+    banking/Transaction.cpp
 )
-target_include_directories(banking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(banking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/banking)
 
 # Тесты
 option(BUILD_TESTS "Build tests" ON)
 
 if(BUILD_TESTS)
-    # Загрузка GoogleTest
     include(FetchContent)
     FetchContent_Declare(
         googletest
@@ -24,23 +23,22 @@ if(BUILD_TESTS)
     )
     FetchContent_MakeAvailable(googletest)
 
-    # Исполняемый файл тестов
-    add_executable(banking_tests
-        ../tests/AccountTest.cpp
-        ../tests/TransactionTest.cpp
+    add_executable(tests
+        tests/AccountTest.cpp
+        tests/TransactionTest.cpp
     )
-    target_link_libraries(banking_tests
+    target_link_libraries(tests
         banking
-        gtest
-        gmock
+        GTest::GTest
+        GTest::GMock
     )
     
     # Покрытие кода
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        target_compile_options(banking_tests PRIVATE --coverage)
-        target_link_options(banking_tests PRIVATE --coverage)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options(tests PRIVATE --coverage)
+        target_link_libraries(tests PRIVATE --coverage)
     endif()
 
     include(GoogleTest)
-    gtest_discover_tests(banking_tests)
+    gtest_discover_tests(tests)
 endif()
