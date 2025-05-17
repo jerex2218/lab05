@@ -27,3 +27,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(tests PRIVATE --coverage)
     target_link_libraries(tests PRIVATE --coverage)
 endif()
+
+# Для main библиотеки
+target_compile_options(banking PRIVATE --coverage)
+target_link_libraries(banking PRIVATE --coverage)
+
+# Для тестов
+target_compile_options(tests PRIVATE --coverage)
+target_link_libraries(tests PRIVATE --coverage)
