@@ -1,34 +1,43 @@
-cmake_minimum_required(VERSION 3.4)
-set(CMAKE_CXX_STANDARD 11)
+cmake_minimum_required(VERSION 3.10...3.27)  # Обновлённая версия
+project(lab05 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(lab05)
-
-# Основная библиотека (из папки banking)
+# Основная библиотека
 add_library(banking
     banking/Account.cpp
     banking/Transaction.cpp
 )
 
-# Тесты (собираются, если включена опция BUILD_TESTS)
+# Тесты
 option(BUILD_TESTS "Build tests" ON)
 
 if(BUILD_TESTS)
-    # Загрузка GoogleTest
+    # Загрузка GoogleTest и GoogleMock
     include(FetchContent)
     FetchContent_Declare(
         googletest
-        URL https://github.com/google/googletest/archive/refs/heads/main.zip
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.12.1
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE  # Фикс предупреждения
     )
     FetchContent_MakeAvailable(googletest)
 
-    # Подключаем тесты из папки tests/
+    # Подключаем тесты
     add_executable(banking_tests
         tests/AccountTest.cpp
         tests/TransactionTest.cpp
     )
-    target_link_libraries(banking_tests banking gtest_main)
-
+    
+    # Подключаем зависимости
+    target_link_libraries(banking_tests
+        banking
+        GTest::GTest
+        GTest::GMock
+        GTest::GMockMain
+    )
+    
     # Автоматическое обнаружение тестов
     include(GoogleTest)
     gtest_discover_tests(banking_tests)
