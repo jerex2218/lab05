@@ -3,7 +3,7 @@
 #include "Account.h"
 #include "Transaction.h"
 
-using namespace testing;  // Добавьте эту строку
+using namespace testing;
 
 class MockAccount : public Account {
 public:
@@ -19,11 +19,21 @@ TEST(TransactionTest, TransferBetweenDifferentAccounts) {
     MockAccount to(2, 500);
     Transaction tr;
 
+    // Устанавливаем порядок вызовов
+    testing::InSequence seq;
+    
+    // 1. Блокировка аккаунтов
     EXPECT_CALL(from, Lock()).Times(1);
     EXPECT_CALL(to, Lock()).Times(1);
+    
+    // 2. Кредит получателю
     EXPECT_CALL(to, ChangeBalance(300)).Times(1);
-    EXPECT_CALL(from, GetBalance()).WillOnce(Return(2000));  // Исправлено
-    EXPECT_CALL(from, ChangeBalance(-301)).Times(1);
+    
+    // 3. Проверка баланса и дебет отправителя
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(2000));
+    EXPECT_CALL(from, ChangeBalance(-301)).Times(1); // 300 + комиссия 1
+    
+    // 4. Разблокировка
     EXPECT_CALL(from, Unlock()).Times(1);
     EXPECT_CALL(to, Unlock()).Times(1);
 
