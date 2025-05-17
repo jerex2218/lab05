@@ -3,6 +3,8 @@
 #include "Account.h"
 #include "Transaction.h"
 
+using namespace testing;  // Добавьте эту строку
+
 class MockAccount : public Account {
 public:
     MockAccount(int id, int balance) : Account(id, balance) {}
@@ -17,11 +19,10 @@ TEST(TransactionTest, TransferBetweenDifferentAccounts) {
     MockAccount to(2, 500);
     Transaction tr;
 
-    // Правильная последовательность вызовов
     EXPECT_CALL(from, Lock()).Times(1);
     EXPECT_CALL(to, Lock()).Times(1);
     EXPECT_CALL(to, ChangeBalance(300)).Times(1);
-    EXPECT_CALL(from, GetBalance()).WillOnce(Return(2000));
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(2000));  // Исправлено
     EXPECT_CALL(from, ChangeBalance(-301)).Times(1);
     EXPECT_CALL(from, Unlock()).Times(1);
     EXPECT_CALL(to, Unlock()).Times(1);
