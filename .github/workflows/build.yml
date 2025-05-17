@@ -11,7 +11,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++ git
+        sudo apt-get install -y cmake g++ git lcov gcovr  # Добавлены lcov и gcovr
         
     - name: Build and test
       run: |
