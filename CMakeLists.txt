@@ -1,48 +1,34 @@
-cmake_minimum_required(VERSION 3.10...3.27)
-
-project(banking LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.10)
+project(lab05)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(BUILD_TESTS "Build tests" ON)
-option(COVERAGE "Enable coverage reporting" ON)
-
-# Основные исходные файлы (без папок include/src)
-set(BANKING_SOURCES
-    Account.cpp
-    Transaction.cpp
+# Основная библиотека из папки banking
+add_library(banking STATIC
+    banking/Account.cpp
+    banking/Transaction.cpp
 )
 
-# Основная библиотека
-add_library(banking STATIC ${BANKING_SOURCES})
+# Указываем, где искать заголовочные файлы
+target_include_directories(banking PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/banking
+)
 
-if(BUILD_TESTS)
-    # Загрузка GoogleTest
-    include(FetchContent)
-    FetchContent_Declare(
-        googletest
-        URL https://github.com/google/googletest/archive/refs/heads/main.zip
-        DOWNLOAD_EXTRACT_TIMESTAMP TRUE  # Убираем предупреждение
+# Тесты (если они есть)
+if(EXISTS "tests/AccountTest.cpp")
+    find_package(GTest REQUIRED)
+    
+    add_executable(banking_tests
+        tests/AccountTest.cpp
+        tests/TransactionTest.cpp
     )
-    FetchContent_MakeAvailable(googletest)
-
-    enable_testing()
-
-    # Тестовые файлы
-    set(TEST_SOURCES
-        AccountTest.cpp
-        TransactionTest.cpp
+    
+    target_link_libraries(banking_tests
+        banking
+        GTest::GTest
+        GTest::Main
     )
-
-    # Исполняемый файл для тестов
-    add_executable(banking_tests ${TEST_SOURCES})
-    target_link_libraries(banking_tests banking GTest::GTest GTest::Main)
-
-    if(COVERAGE)
-        target_compile_options(banking_tests PRIVATE --coverage)
-        target_link_libraries(banking_tests --coverage)
-    endif()
-
+    
     add_test(NAME banking_tests COMMAND banking_tests)
 endif()
