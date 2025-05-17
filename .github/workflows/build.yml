@@ -8,6 +8,6 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y cmake g++
       - run: |
           mkdir build && cd build
-          cmake ../banking -DBUILD_TESTS=ON
+          cmake .. -DBUILD_TESTS=ON
           cmake --build .
           ./banking_tests
