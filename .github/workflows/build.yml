@@ -19,3 +19,16 @@ jobs:
         cmake .. -DBUILD_TESTS=ON
         cmake --build .
         ./tests/tests
+        
+    - name: Generate coverage
+      run: |
+        cd build
+        lcov --capture --directory . --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info
+        lcov --list coverage.info
+        
+    - name: Upload to Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: build/coverage.info
