@@ -23,8 +23,8 @@ jobs:
     - name: Generate coverage
       run: |
         cd build
-        lcov --capture --directory . --output-file coverage.info
-        lcov --remove coverage.info '/usr/*' --output-file coverage.info
+        lcov --ignore-errors mismatch --capture --directory . --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' '*/tests/*' --output-file coverage.info
         lcov --list coverage.info
         
     - name: Upload to Coveralls
