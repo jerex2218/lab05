@@ -1,50 +1,35 @@
 cmake_minimum_required(VERSION 3.4)
-
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(lab05)
+project(banking)
 
-include_directories(${PROJECT_NAME} .)
+# Основная библиотека (Account + Transaction)
+add_library(banking
+    Account.cpp
+    Transaction.cpp
+)
 
-if (BUILD_TESTS)
-# Загрузка и распаковка тестов
-		configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
-		execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-  				RESULT_VARIABLE result
-  				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download 
-  	)
-		if(result)
-  		message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-		endif()
-		execute_process(COMMAND ${CMAKE_COMMAND} --build .
- 		 								RESULT_VARIABLE result
- 						 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-		if(result)
-  		message(FATAL_ERROR "Build step for googletest failed: ${result}")
-		endif()
+# Тесты (собираются, если включена опция BUILD_TESTS)
+option(BUILD_TESTS "Build tests" ON)
 
-		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+if(BUILD_TESTS)
+    # Загрузка GoogleTest
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/heads/main.zip
+    )
+    FetchContent_MakeAvailable(googletest)
 
-		add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
-                 ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
-                 EXCLUDE_FROM_ALL)
+    # Подключаем тесты из папки tests/
+    add_executable(banking_tests
+        ../tests/AccountTest.cpp
+        ../tests/TransactionTest.cpp
+    )
+    target_link_libraries(banking_tests banking gtest_main)
 
-		if (CMAKE_VERSION VERSION_LESS 2.8.11)
-  		include_directories("${gtest_SOURCE_DIR}/include")
-		endif()
-
-		file(GLOB ${PROJECT_NAME}_SOURCES *.cpp)
-    file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
-    add_executable(test ${${PROJECT_NAME}_SOURCES} ${${PROJECT_NAME}_TEST_SOURCES})
-    target_link_libraries(test gtest gmock_main)
-    add_test(NAME test COMMAND test)
-
-endif()
-
-option(COVERAGE "Coverage" OFF)
-
-if (COVERAGE)
-    target_compile_options(test PRIVATE --coverage)
-    target_link_libraries(test --coverage)
+    # Автоматическое обнаружение тестов
+    include(GoogleTest)
+    gtest_discover_tests(banking_tests)
 endif()
