@@ -4,6 +4,7 @@
 
 class MockAccount : public Account {
 public:
+    MockAccount() : Account(0, 0) {}  
     MOCK_METHOD(int, GetBalance, (), (const, override));
     MOCK_METHOD(void, ChangeBalance, (int diff), (override));
     MOCK_METHOD(void, Lock, (), (override));
