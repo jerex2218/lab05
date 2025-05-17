@@ -27,3 +27,10 @@ TEST(AccountTest, ChangeBalanceWorksWhenLocked) {
     ASSERT_NO_THROW(acc.ChangeBalance(100));
     ASSERT_EQ(acc.GetBalance(), 1100);
 }
+TEST(AccountTest, LockUnlockSequence) {
+    Account acc(1, 1000);
+    acc.Lock();
+    ASSERT_THROW(acc.Lock(), std::runtime_error);
+    acc.Unlock();
+    ASSERT_NO_THROW(acc.Lock());
+}
