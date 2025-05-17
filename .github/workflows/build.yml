@@ -1,0 +1,13 @@
+name: Build and Test
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y cmake g++
+      - run: |
+          mkdir build && cd build
+          cmake ../banking -DBUILD_TESTS=ON
+          cmake --build .
+          ./banking_tests
