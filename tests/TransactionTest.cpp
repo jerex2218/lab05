@@ -5,26 +5,25 @@
 
 class MockAccount : public Account {
 public:
-    MockAccount() : Account(0, 0) {}
+    // Конструктор с возможностью установки ID
+    MockAccount(int id = 0, int balance = 0) : Account(id, balance) {}
+    
+    // Mock-методы для виртуальных функций
     MOCK_METHOD(int, GetBalance, (), (const, override));
     MOCK_METHOD(void, ChangeBalance, (int diff), (override));
     MOCK_METHOD(void, Lock, (), (override));
     MOCK_METHOD(void, Unlock, (), (override));
     
-    int id() const override { return id_; }
-    void setId(int id) { id_ = id; }  /
-    
-private:
-    int id_ = 0;
+    // Не mock'аем id(), используем реализацию базового класса
 };
 
 TEST(TransactionTest, MakeTransactionSuccess) {
-    MockAccount from, to;
-    from.setId(1);
-    to.setId(2);
+    // Создаем mock-аккаунты с разными ID
+    MockAccount from(1, 1000);
+    MockAccount to(2, 500);
     Transaction tr;
 
-    // Ожидаемые вызовы в правильном порядке:
+    // Ожидаемые вызовы
     EXPECT_CALL(from, Lock()).Times(1);
     EXPECT_CALL(to, Lock()).Times(1);
     EXPECT_CALL(to, ChangeBalance(300)).Times(1);
@@ -34,4 +33,17 @@ TEST(TransactionTest, MakeTransactionSuccess) {
     EXPECT_CALL(to, Unlock()).Times(1);
 
     ASSERT_TRUE(tr.Make(from, to, 300));
+}
+
+TEST(TransactionTest, SameAccountFailure) {
+    MockAccount acc(1, 1000);
+    Transaction tr;
+    EXPECT_THROW(tr.Make(acc, acc, 100), std::logic_error);
+}
+
+TEST(TransactionTest, SmallAmountFailure) {
+    MockAccount from(1, 1000);
+    MockAccount to(2, 500);
+    Transaction tr;
+    EXPECT_THROW(tr.Make(from, to, 50), std::logic_error);
 }
