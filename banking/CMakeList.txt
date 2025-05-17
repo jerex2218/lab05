@@ -49,13 +49,4 @@ if (COVERAGE)
     target_link_libraries(test --coverage)
 endif()
 
-language: cpp
 
-before_install:
-  - pip install --user cpp-coveralls
-  - cd banking
-
-before_script: cmake -H. -Bbuild -DBUILD_TESTS=ON -Bbuild -DCOVERAGE=ON
-script: cmake --build build --target test && ./build/test
-
-after_success: coveralls --root . -e build -e tests
