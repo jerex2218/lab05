@@ -32,4 +32,18 @@ bool Transaction::Make(Account& from, Account& to, int sum) {
     return true;
 }
 
-// Остальные методы остаются без изменений
+void Transaction::Credit(Account& account, int sum) {
+    account.ChangeBalance(sum);
+}
+
+bool Transaction::Debit(Account& account, int sum) {
+    if (account.GetBalance() >= sum) {
+        account.ChangeBalance(-sum);
+        return true;
+    }
+    return false;
+}
+
+void Transaction::SaveToDataBase(Account& from, Account& to, int sum) {
+   
+}
