@@ -16,9 +16,8 @@ jobs:
     - name: Configure and Build
       run: |
         mkdir build && cd build
-        cmake .. -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
-        cmake --build . --config Debug
-        
+        cmake .. -DBUILD_TESTS=ON
+        cmake --build .
         
     - name: Run tests and coverage
       run: |
