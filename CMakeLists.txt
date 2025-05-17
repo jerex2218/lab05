@@ -15,19 +15,14 @@ target_include_directories(banking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/banking)
 option(BUILD_TESTS "Build tests" ON)
 
 if(BUILD_TESTS)
-    # Загрузка GoogleTest через FetchContent (используем существующий тег)
+    # Загрузка GoogleTest
     include(FetchContent)
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG v1.13.0  # Используем существующий тег
-        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        GIT_TAG v1.13.0
     )
-    
-    # Отключаем ненужные компоненты
-    set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
-    set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
-    
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
 
     # Подключаем тесты
@@ -36,11 +31,10 @@ if(BUILD_TESTS)
         tests/TransactionTest.cpp
     )
     
-    target_include_directories(banking_tests PRIVATE 
+    target_include_directories(banking_tests PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/banking
     )
     
-    # Подключаем зависимости
     target_link_libraries(banking_tests
         banking
         GTest::gtest
