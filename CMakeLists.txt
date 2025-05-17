@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)  # Требуется для FetchContent
+cmake_minimum_required(VERSION 3.14)
 project(lab05)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -18,12 +18,12 @@ option(BUILD_TESTS "Build tests" ON)
 option(COVERAGE "Enable coverage" ON)
 
 if(BUILD_TESTS)
-    # Автоматическая загрузка GoogleTest
+    # Новый надежный способ загрузки GTest
     include(FetchContent)
     FetchContent_Declare(
         googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG release-1.14.0
+        URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     )
     FetchContent_MakeAvailable(googletest)
 
