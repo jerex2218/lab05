@@ -11,24 +11,32 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++ git lcov gcovr  # Добавлены lcov и gcovr
+        sudo apt-get install -y cmake g++ git lcov
         
-    - name: Build and test
+    - name: Build
       run: |
         mkdir build && cd build
         cmake .. -DBUILD_TESTS=ON
         cmake --build .
+        
+    - name: Run tests
+      run: |
+        cd build
         ./tests/tests
         
     - name: Generate coverage
       run: |
         cd build
         lcov --ignore-errors mismatch --capture --directory . --output-file coverage.info
-        lcov --remove coverage.info '/usr/*' '*/tests/*' --output-file coverage.info
+        lcov --remove coverage.info \
+             '*/tests/*' \
+             '/usr/*' \
+             '*/include/*' \
+             --output-file coverage.info
         lcov --list coverage.info
         
     - name: Upload to Coveralls
-      uses: coverallsapp/github-action@master
+      uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: build/coverage.info
