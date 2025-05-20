@@ -36,4 +36,3 @@ TEST(TransactionTest, TransferBetweenDifferentAccounts) {
 
     ASSERT_TRUE(tr.Make(from, to, 300));
 }
-
