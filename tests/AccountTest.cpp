@@ -16,5 +16,6 @@ TEST(AccountTest, ChangeBalanceRequiresLock) {
 
 TEST(AccountTest, ChangeBalanceRequiresLock) {
     Account acc(1, 1000);
+    acc.Lock();
     ASSERT_EQ(acc.GetBalance(), 1100);
 }
