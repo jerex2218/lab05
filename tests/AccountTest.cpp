@@ -13,3 +13,8 @@ TEST(AccountTest, ChangeBalanceRequiresLock) {
     ASSERT_NO_THROW(acc.ChangeBalance(100));
     ASSERT_EQ(acc.GetBalance(), 1100);
 }
+
+TEST(AccountTest, ChangeBalanceRequiresLock) {
+    Account acc(1, 1000);
+    ASSERT_EQ(acc.GetBalance(), 1100);
+}
