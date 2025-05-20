@@ -36,3 +36,60 @@ TEST(TransactionTest, TransferBetweenDifferentAccounts) {
 
     ASSERT_TRUE(tr.Make(from, to, 300));
 }
+
+
+
+
+TEST(TransactionTest, TransferToSameAccountThrows) {
+    MockAccount acc(1, 100);
+    Transaction tr;
+    ASSERT_THROW(tr.Make(acc, acc, 200), std::logic_error);
+}
+
+TEST(TransactionTest, NegativeSumThrows) {
+    MockAccount from(1, 200);
+    MockAccount to(2, 100);
+    Transaction tr;
+    ASSERT_THROW(tr.Make(from, to, -50), std::invalid_argument);
+}
+
+TEST(TransactionTest, SmallSumThrows) {
+    MockAccount from(1, 200);
+    MockAccount to(2, 100);
+    Transaction tr;
+    ASSERT_THROW(tr.Make(from, to, 99), std::logic_error);
+}
+
+TEST(TransactionTest, FeeExceedsHalfSumReturnsFalse) {
+    MockAccount from(1, 300);
+    MockAccount to(2, 0);
+    Transaction tr;
+    ASSERT_FALSE(tr.Make(from, to, 1)); // sum=1, fee*2=2 > 1
+}
+
+TEST(TransactionTest, DebitFailsDueToInsufficientBalance) {
+    MockAccount from(1, 100);
+    MockAccount to(2, 0);
+    Transaction tr;
+
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(100));
+    EXPECT_CALL(from, ChangeBalance(_)).Times(0); // Дебит не должен вызываться
+    EXPECT_CALL(to, ChangeBalance(_)).Times(0);
+
+    ASSERT_FALSE(tr.Make(from, to, 150)); // 150 + 1 = 151 > 100
+}
+
+TEST(TransactionTest, UnlockOrderIsCorrectOnFailure) {
+    MockAccount from(1, 50);
+    MockAccount to(2, 0);
+    Transaction tr;
+
+    testing::InSequence seq;
+    EXPECT_CALL(from, Lock());
+    EXPECT_CALL(to, Lock());
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(50));
+    EXPECT_CALL(to, Unlock()); // Сначала разблокировка to
+    EXPECT_CALL(from, Unlock()); // Потом from
+
+    ASSERT_FALSE(tr.Make(from, to, 100)); // Недостаточно средств
+}
