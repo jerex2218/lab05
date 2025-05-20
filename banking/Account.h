@@ -5,7 +5,7 @@ class Account {
   virtual ~Account();
 
   // Virtual to test.
-  virtual int GetBalance() const;
+ int GetBalance() const { return balance_; } 
 
   // Virtual to test.
   virtual void ChangeBalance(int diff);
