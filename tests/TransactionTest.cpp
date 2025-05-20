@@ -64,7 +64,10 @@ TEST(TransactionTest, FeeExceedsHalfSumReturnsFalse) {
     MockAccount from(1, 300);
     MockAccount to(2, 0);
     Transaction tr;
-    ASSERT_FALSE(tr.Make(from, to, 1)); // sum=1, fee*2=2 > 1
+
+    EXPECT_CALL(from, Lock()).Times(0);
+    EXPECT_CALL(to, Lock()).Times(0);
+    ASSERT_FALSE(tr.Make(from, to, 1)); 
 }
 
 TEST(TransactionTest, DebitFailsDueToInsufficientBalance) {
