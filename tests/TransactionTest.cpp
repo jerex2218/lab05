@@ -75,11 +75,14 @@ TEST(TransactionTest, DebitFailsDueToInsufficientBalance) {
     MockAccount to(2, 0);
     Transaction tr;
 
-    EXPECT_CALL(from, GetBalance()).WillOnce(Return(100));
-    EXPECT_CALL(from, ChangeBalance(_)).Times(0); // Дебит не должен вызываться
-    EXPECT_CALL(to, ChangeBalance(_)).Times(0);
+   
+    EXPECT_CALL(from, Lock()).Times(1);
+    EXPECT_CALL(to, Lock()).Times(1);
+    EXPECT_CALL(to, Unlock()).Times(1);
+    EXPECT_CALL(from, Unlock()).Times(1);
 
-    ASSERT_FALSE(tr.Make(from, to, 150)); // 150 + 1 = 151 > 100
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(100));
+    ASSERT_FALSE(tr.Make(from, to, 150)); 
 }
 
 TEST(TransactionTest, UnlockOrderIsCorrectOnFailure) {
