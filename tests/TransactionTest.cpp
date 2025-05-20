@@ -21,19 +21,22 @@ TEST(TransactionTest, TransferBetweenDifferentAccounts) {
 
     testing::InSequence seq;
 
-    // Ожидаем блокировку
     EXPECT_CALL(from, Lock()).Times(1);
     EXPECT_CALL(to, Lock()).Times(1);
+
     EXPECT_CALL(from, GetBalance()).WillOnce(Return(2000));
-    EXPECT_CALL(from, ChangeBalance(-301)).Times(1); 
+    EXPECT_CALL(from, ChangeBalance(-301)).Times(1); // 300 + fee=1
+
     EXPECT_CALL(to, ChangeBalance(300)).Times(1);
-    EXPECT_CALL(from, GetBalance()).WillOnce(Return(1699)); 
-    EXPECT_CALL(to, GetBalance()).WillOnce(Return(800));    
+
     EXPECT_CALL(to, Unlock()).Times(1);
     EXPECT_CALL(from, Unlock()).Times(1);
+
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(1699));
+    EXPECT_CALL(to, GetBalance()).WillOnce(Return(800));   
+
     ASSERT_TRUE(tr.Make(from, to, 300));
 }
-
 
 
 
