@@ -13,3 +13,19 @@ TEST(AccountTest, ChangeBalanceRequiresLock) {
     ASSERT_NO_THROW(acc.ChangeBalance(100));
     ASSERT_EQ(acc.GetBalance(), 1100);
 }
+
+TEST(AccountTest, LockThrowsWhenAlreadyLocked) {
+    Account acc(1, 100);
+    acc.Lock();
+    ASSERT_THROW(acc.Lock(), std::runtime_error);
+}
+
+TEST(AccountTest, UnlockDoesNotThrowWhenUnlocked) {
+    Account acc(1, 100);
+    ASSERT_NO_THROW(acc.Unlock()); // Проверяем, что разблокировка незаблокированного аккаунта допустима
+}
+
+TEST(AccountTest, ChangeBalanceWithoutLockThrows) {
+    Account acc(1, 100);
+    ASSERT_THROW(acc.ChangeBalance(50), std::runtime_error);
+}
